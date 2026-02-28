@@ -7,10 +7,10 @@ export default {
     theme: {
         extend: {
             colors: {
-                bgMain: '#0f111a',
-                bgCard: '#1a1d2d',
-                bgInput: '#2a2d42',
-                borderC: '#3b405e',
+                bgMain: '#0a0812',
+                bgCard: '#161324',
+                bgInput: '#231f38',
+                borderC: '#372f54',
                 textMain: '#f8fafc',
                 textMuted: '#94a3b8',
                 primary: '#8b5cf6',

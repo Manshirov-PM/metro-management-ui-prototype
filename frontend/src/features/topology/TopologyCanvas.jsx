@@ -2,15 +2,15 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { LucideSettings, LucideAlertTriangle, LucideServer, LucideDatabase } from 'lucide-react';
 
 const INITIAL_NODES = [
-    { id: 'push-data', label: 'push-data', x: 100, y: 250, type: 'kafka-topic' },
-    { id: 'kafka-consumer', label: 'kafka-consumer', x: 250, y: 250, type: 'metro-service' },
-    { id: 'scheduler', label: 'scheduler', x: 400, y: 250, type: 'metro-service' },
-    { id: 'python-validate-1', label: 'python-validate-1', x: 550, y: 250, type: 'metro-service' },
-    { id: 'transform-data', label: 'transform-data', x: 700, y: 125, type: 'metro-service', optional: true },
-    { id: 'external-transform', label: 'external-transform', x: 850, y: 125, type: 'metro-service', optional: true },
-    { id: 'node-fail', label: 'informative-validate (fail)', x: 550, y: 375, type: 'error' },
-    { id: 'node-publish', label: 'publish', x: 850, y: 150, type: 'kafka-topic' },
-    { id: 'node-publish-store', label: 'publish-storages', x: 850, y: 375, type: 'metro-service' }
+    { id: 'push-data', label: 'push-data', x: 250, y: 100, type: 'kafka-topic' },
+    { id: 'kafka-consumer', label: 'kafka-consumer', x: 250, y: 220, type: 'metro-service' },
+    { id: 'scheduler', label: 'scheduler', x: 250, y: 340, type: 'metro-service' },
+    { id: 'python-validate-1', label: 'python-validate-1', x: 450, y: 220, type: 'metro-service' },
+    { id: 'transform-data', label: 'transform-data', x: 550, y: 100, type: 'metro-service', optional: true },
+    { id: 'external-transform', label: 'external-transform', x: 700, y: 100, type: 'metro-service', optional: true },
+    { id: 'node-fail', label: 'informative-validate (fail)', x: 550, y: 340, type: 'error' },
+    { id: 'node-publish', label: 'publish', x: 850, y: 220, type: 'kafka-topic' },
+    { id: 'node-publish-store', label: 'publish-storages', x: 800, y: 340, type: 'metro-service' }
 ];
 
 const CONNECTIONS = [
@@ -29,6 +29,24 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
     const [nodes, setNodes] = useState(INITIAL_NODES);
     const [scale, setScale] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
+
+    // Inline Edit State
+    const [isEditingInfo, setIsEditingInfo] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editDesc, setEditDesc] = useState('');
+    const [isEditingPush, setIsEditingPush] = useState(false);
+    const [editPushVal, setEditPushVal] = useState('');
+    const [isEditingPull, setIsEditingPull] = useState(false);
+    const [editPullVal, setEditPullVal] = useState('');
+
+    useEffect(() => {
+        if (activePipeline) {
+            setEditName(activePipeline.name);
+            setEditDesc(activePipeline.description);
+            setEditPushVal(activePipeline.pushLimit);
+            setEditPullVal(activePipeline.pullLimit);
+        }
+    }, [activePipeline]);
 
     const containerRef = useRef(null);
     const isDraggingNode = useRef(false);
@@ -105,7 +123,14 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
 
     // SVG Line Path Generator
     const generatePath = (start, end) => {
-        // Basic bezier curve routing x -> +50, y -> same, target -> x-50
+        // If they are vertically aligned (e.g., Push -> Kafka -> Scheduler)
+        if (Math.abs(start.x - end.x) < 20) {
+            const dy = Math.abs(end.y - start.y) * 0.5;
+            // Sweep right by 100px then back
+            return `M ${start.x} ${start.y} C ${start.x + 100} ${start.y + (dy * 0.5)}, ${end.x + 100} ${end.y - (dy * 0.5)}, ${end.x} ${end.y}`;
+        }
+
+        // Default Horizontal routing
         const dx = Math.abs(end.x - start.x) * 0.5;
         return `M ${start.x} ${start.y} C ${start.x + dx} ${start.y}, ${end.x - dx} ${end.y}, ${end.x} ${end.y}`;
     };
@@ -117,11 +142,55 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
             onMouseLeave={handleMouseUp}
             ref={containerRef}
             onMouseDown={(e) => handleMouseDown(e)}
-            style={{ cursor: 'grab', background: '#0a0c10', backgroundImage: 'radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 2px, transparent 0)', backgroundSize: '40px 40px', backgroundPosition: `${pan.x}px ${pan.y}px` }}
+            style={{ cursor: 'grab', background: 'var(--bgMain)', backgroundImage: 'radial-gradient(circle at 10px 10px, rgba(139, 92, 246, 0.05) 2px, transparent 0)', backgroundSize: '40px 40px', backgroundPosition: `${pan.x}px ${pan.y}px` }}
         >
-            <div className="absolute top-4 left-4 z-10 flex gap-4">
-                <div className="bg-bgInput px-4 py-2 rounded-full border border-borderC text-primary font-bold text-sm shadow-lg">
-                    Pipeline: {activePipeline?.name || 'Loading...'}
+            <div className="absolute top-4 left-4 z-40 flex flex-col gap-2 pointer-events-auto">
+                <div className="bg-bgInput/90 backdrop-blur px-4 py-2 rounded-xl border border-borderC shadow-lg flex flex-col max-w-[300px]">
+                    <div className="flex items-center justify-between mb-1">
+                        <h3 className="text-primary font-bold m-0">{activePipeline?.name || 'Loading...'}</h3>
+                        <button className="text-textMuted hover:text-white transition-colors bg-transparent border-none p-0 cursor-pointer">
+                            <LucideSettings size={14} />
+                        </button>
+                    </div>
+                    <p className="text-xs text-textMuted m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                        {activePipeline?.description || 'Core data ingestion and streaming pathway.'}
+                    </p>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                    {/* Rate Limits Module */}
+                    <div className="bg-bgInput/90 backdrop-blur p-1 rounded-full border border-borderC shadow-lg flex items-center gap-1">
+                        <div className="flex items-center text-sm bg-success/10 rounded-full py-1 pr-3 pl-1.5 gap-1.5 border border-success/20 cursor-pointer hover:bg-success/20 transition-colors" title="Max Push Rate">
+                            <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_10px_rgba(139,92,246,0.5)] text-[10px] font-bold">
+                                PSH
+                            </div>
+                            <strong className="text-textMain">{activePipeline?.pushLimit?.toLocaleString() || '10,000'}</strong>
+                            <span className="text-textMuted text-xs font-bold">/s</span>
+                        </div>
+
+                        <div className="flex items-center text-sm bg-info/10 rounded-full py-1 pr-3 pl-1.5 gap-1.5 border border-info/20 cursor-pointer hover:bg-info/20 transition-colors" title="Max Pull Rate">
+                            <div className="bg-secondary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)] text-[10px] font-bold">
+                                GET
+                            </div>
+                            <strong className="text-textMain">{activePipeline?.pullLimit?.toLocaleString() || '50,000'}</strong>
+                            <span className="text-textMuted text-xs font-bold">/s</span>
+                        </div>
+                    </div>
+
+                    {/* Data Streaming Metric */}
+                    <div className="bg-bgInput/90 backdrop-blur px-3 py-2 rounded-full border border-borderC shadow-lg flex items-center gap-2 text-xs font-bold">
+                        <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                        <span className="text-white">1.2 GB</span>
+                        <select className="bg-transparent border-none text-textMuted outline-none cursor-pointer">
+                            <option>Last 1 Hr</option>
+                            <option>Last 24 Hr</option>
+                        </select>
+                    </div>
+
+                    {/* Grafana Link */}
+                    <a href="http://grafana.internal.net" target="_blank" className="bg-[#f05a28]/10 hover:bg-[#f05a28]/20 text-[#f05a28] px-3 py-2 rounded-full border border-[#f05a28]/30 shadow-lg flex items-center gap-1.5 text-xs font-bold transition-colors no-underline">
+                        Grafana
+                    </a>
                 </div>
             </div>
 
