@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --color-bgMain: #0a0812;
-  --color-bgCard: #161324;
-  --color-bgInput: #231f38;
-  --color-borderC: #372f54;
-  --color-primary: #8b5cf6;
-  --color-primaryHover: #7c3aed;
+  --color-bgMain: 10 8 18;
+  --color-bgCard: 22 19 36;
+  --color-bgInput: 35 31 56;
+  --color-borderC: 55 47 84;
+  --color-primary: 139 92 246;
+  --color-primaryHover: 124 58 237;
 }
 
 @layer base {
