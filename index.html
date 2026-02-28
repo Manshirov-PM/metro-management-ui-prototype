@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Management UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Ionicons for beautiful simple icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body class="dark-theme">
+
+    <!-- Global Header -->
+    <header class="global-header">
+        <div class="header-left">
+            <div class="logo">
+                <ion-icon name="analytics-outline"></ion-icon>
+                <span>Metro Management</span>
+            </div>
+            <div class="project-context">
+                <span class="label">Project:</span>
+                <span class="value">Data Lake Alpha <ion-icon name="chevron-down-outline"></ion-icon></span>
+            </div>
+        </div>
+
+        <div class="header-right">
+
+            <!-- Notifications Center -->
+            <div class="notifications-center">
+                <button id="btn-notifications" class="icon-btn btn-ghost has-badge">
+                    <ion-icon name="notifications-outline"></ion-icon>
+                    <span class="badge">3</span>
+                </button>
+
+                <!-- Notifications Dropdown -->
+                <div class="notifications-dropdown" id="notifications-dropdown">
+                    <div class="dropdown-header">
+                        <div class="tabs-sm">
+                            <button class="tab-sm active" data-target="tab-notif-requests">Requests <span
+                                    class="badge-sm">2</span></button>
+                            <button class="tab-sm" data-target="tab-notif-status">Notifications <span
+                                    class="badge-sm">1</span></button>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-body">
+                        <!-- Tab 1: Requests -->
+                        <div id="tab-notif-requests" class="tab-content-sm active">
+                            <div class="notif-item request-item">
+                                <div class="notif-actions">
+                                    <button class="action-btn approve" title="Approve"><ion-icon
+                                            name="checkmark-outline"></ion-icon></button>
+                                    <button class="action-btn reject" title="Reject"><ion-icon
+                                            name="close-outline"></ion-icon></button>
+                                </div>
+                                <div class="notif-content">
+                                    <p>Request from <strong>John Doe</strong> for <strong>Read</strong> to source
+                                        <strong>Sales_DB</strong> for group <strong>Analysts</strong>
+                                    </p>
+                                    <button class="expand-btn"><ion-icon
+                                            name="chevron-down-outline"></ion-icon></button>
+                                </div>
+                            </div>
+                            <div class="notif-item request-item">
+                                <div class="notif-actions">
+                                    <button class="action-btn approve" title="Approve"><ion-icon
+                                            name="checkmark-outline"></ion-icon></button>
+                                    <button class="action-btn reject" title="Reject"><ion-icon
+                                            name="close-outline"></ion-icon></button>
+                                </div>
+                                <div class="notif-content">
+                                    <p>Request from <strong>Jane Smith</strong> for <strong>Write</strong> to source
+                                        <strong>HR_Lake</strong> for group <strong>Engineering_Core</strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Status -->
+                        <div id="tab-notif-status" class="tab-content-sm">
+                            <div class="notif-item status-item">
+                                <div class="notif-actions">
+                                    <button class="action-btn delete" title="Clear"><ion-icon
+                                            name="trash-outline"></ion-icon></button>
+                                </div>
+                                <div class="notif-content">
+                                    <p>Your request for <strong>Owner</strong> for source
+                                        <strong>Marketing_Logs</strong> was <span
+                                            class="status-approved">Approved</span> by <strong>Admin_Bob</strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-avatar" onclick="openModal('team-modal')" style="cursor: pointer;"
+                title="Developer Team (Developers Team Picture)">AD</div>
+        </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="main-tabs">
+        <button class="main-tab active" data-target="tab-admin">Admin & Resource Management</button>
+        <button class="main-tab" data-target="tab-business">Business Dashboard</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- TAB A: Admin & Resource Management -->
+        <div id="tab-admin" class="tab-pane active">
+
+            <div class="action-bar flex-between mb-4">
+                <div>
+                    <h2>Infrastructure Overview</h2>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="openModal('client-modal')">
+                        <ion-icon name="person-add-outline"></ion-icon> Add Client
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('pipeline-modal')">
+                        <ion-icon name="add-circle-outline"></ion-icon> Create Pipeline
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visual Checkalives -->
+            <div class="system-status-bar mb-4"
+                style="display: flex; gap: 20px; align-items: center; background: rgba(0,0,0,0.25); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <strong class="text-primary"><ion-icon name="pulse-outline"></ion-icon> System Health</strong>
+                <div class="flex-center" style="gap: 8px;">
+                    <div class="badge-status online"><ion-icon name="checkmark-circle"></ion-icon> Schema Registry
+                    </div>
+                </div>
+                <div class="flex-center" style="gap: 8px;">
+                    <div class="badge-status warning" style="color:var(--warning);"><ion-icon name="warning"></ion-icon>
+                        Kafka Lag: 4,020 msg </div>
+                </div>
+                <div class="flex-center" style="gap: 8px;">
+                    <div class="badge-status online" style="display:flex; align-items:center; gap:6px;">
+                        <ion-icon name="checkmark-circle"></ion-icon> PG Connections: 142/400
+                        <div
+                            style="width: 80px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;">
+                            <div style="width: 35.5%; height: 100%; background: var(--success);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <!-- Pipelines Overview -->
+                <div class="card col-span-2">
+                    <div class="card-header">
+                        <h3>Pipelines & Resources Overview</h3>
+                    </div>
+                    <div class="card-body no-padding">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Pipeline Name</th>
+                                    <th>Status</th>
+                                    <th>Client Group</th>
+                                    <th>Pods Allocated</th>
+                                    <th>CPU (Cores)</th>
+                                    <th>Memory (GB)</th>
+                                    <th>Last Sync</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Rokak</strong></td>
+                                    <td><span class="badge-status online">Running</span></td>
+                                    <td>Finance Team</td>
+                                    <td>4</td>
+                                    <td>16</td>
+                                    <td>64</td>
+                                    <td>2 mins ago</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Air</strong></td>
+                                    <td><span class="badge-status online">Running</span></td>
+                                    <td>Marketing, Data Science</td>
+                                    <td>12</td>
+                                    <td>48</td>
+                                    <td>128</td>
+                                    <td>Just now</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Navy</strong></td>
+                                    <td><span class="badge-status degraded">Degraded</span></td>
+                                    <td>Sales</td>
+                                    <td>2</td>
+                                    <td>8</td>
+                                    <td>32</td>
+                                    <td>15 mins ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Resource Monitoring -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Resource Monitoring</h3>
+                        <div class="actions">
+                            <button class="btn btn-xs btn-outline"><ion-icon name="reload-outline"></ion-icon></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="utilization-list">
+                            <div class="util-item">
+                                <div class="util-header">
+                                    <span class="pod-name">Pod-Alpha-01 (Rokak)</span>
+                                    <span class="util-val warning">85% Utilized</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill warning" style="width: 85%"></div>
+                                </div>
+                                <div class="util-footer">
+                                    <span class="metric">Memory hitting threshold</span>
+                                    <button class="btn btn-xs btn-primary"
+                                        onclick="openPodConfig('Pod-Alpha-01', 2, 8)">Scale Up</button>
+                                </div>
+                            </div>
+
+                            <div class="util-item">
+                                <div class="util-header">
+                                    <span class="pod-name">Pod-Beta-04 (Air)</span>
+                                    <span class="util-val danger">98% Utilized</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill danger" style="width: 98%"></div>
+                                </div>
+                                <div class="util-footer">
+                                    <span class="metric danger-text"><ion-icon name="warning"></ion-icon> High CPU
+                                        Usage</span>
+                                    <button class="btn btn-xs btn-primary"
+                                        onclick="openPodConfig('Pod-Beta-04', 6, 16)">Scale Up</button>
+                                </div>
+                            </div>
+
+                            <div class="util-item">
+                                <div class="util-header">
+                                    <span class="pod-name">Pod-Gamma-02 (Navy)</span>
+                                    <span class="util-val success">42% Utilized</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill success" style="width: 42%"></div>
+                                </div>
+                                <div class="util-footer">
+                                    <span class="metric">Stable</span>
+                                    <button class="btn btn-xs btn-ghost" disabled>Scale Up</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLA & Performance -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>SLA & Performance</h3>
+                    </div>
+                    <div class="card-body no-padding">
+                        <table class="data-table sm">
+                            <thead>
+                                <tr>
+                                    <th>Client / Pipeline</th>
+                                    <th>Avg Flow Time</th>
+                                    <th>Full Flow SLA</th>
+                                    <th>Var</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Finance<br><span class="text-muted">Rokak</span></td>
+                                    <td>14.2s</td>
+                                    <td>15.0s</td>
+                                    <td class="success-text">-0.8s</td>
+                                </tr>
+                                <tr>
+                                    <td>Marketing<br><span class="text-muted">Air</span></td>
+                                    <td>2.1s</td>
+                                    <td>2.0s</td>
+                                    <td class="warning-text">+0.1s</td>
+                                </tr>
+                                <tr>
+                                    <td>Sales<br><span class="text-muted">Navy</span></td>
+                                    <td class="danger-text">124s</td>
+                                    <td>60.0s</td>
+                                    <td class="danger-text">+64s</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pipeline Topology -->
+                <div class="card col-span-2 pipeline-card">
+                    <div class="card-header">
+                        <div class="flex-center" style="gap: 12px; width: 350px;">
+                            <div id="pipeline-info-display" style="display:flex; flex-direction:column;">
+                                <div class="flex-center" style="gap: 8px;">
+                                    <h3 id="pipeline-title-text" style="margin:0;">Microservices Topology</h3>
+                                    <select class="form-select bg-transparent text-primary font-bold border-none"
+                                        id="pipeline-switcher"
+                                        style="padding: 4px 28px 4px 8px; font-size: 15px; cursor: pointer;">
+                                        <option value="p1">Pipeline 1 (Rokak)</option>
+                                        <option value="p2" selected>Pipeline 2 (Air)</option>
+                                        <option value="p3">Pipeline 3 (Navy)</option>
+                                    </select>
+                                    <button class="btn btn-xs btn-ghost text-muted" id="btn-edit-pipeline-info"
+                                        title="Edit Name & Description"><ion-icon
+                                            name="create-outline"></ion-icon></button>
+                                </div>
+                                <p id="pipeline-desc-text" class="text-xs text-muted mt-1"
+                                    style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    Core data ingestion and streaming pathway for Marketing Air pipeline.</p>
+                            </div>
+
+                            <div id="pipeline-info-edit"
+                                style="display:none; flex-direction:column; gap: 8px; width:100%;">
+                                <input type="text" id="edit-pipeline-name" class="form-input bg-input text-sm"
+                                    value="Pipeline 2 (Air)">
+                                <textarea id="edit-pipeline-desc" class="form-input bg-input text-xs"
+                                    rows="2">Core data ingestion and streaming pathway for Marketing Air pipeline.</textarea>
+                                <div class="flex-center" style="gap: 4px;">
+                                    <button class="btn btn-xs btn-primary" id="btn-save-pipeline-info">Save</button>
+                                    <button class="btn btn-xs btn-outline" id="btn-cancel-pipeline-info">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="actions flex-center" style="gap: 16px;">
+                            <div class="rate-limit-badge flex-center bg-input"
+                                style="padding: 4px; border-radius: 30px; gap: 4px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+
+                                <!-- Push Limit -->
+                                <div class="flex-center text-sm"
+                                    style="background: rgba(16, 185, 129, 0.1); border-radius: 20px; padding: 4px 12px 4px 6px; gap: 6px; border: 1px solid rgba(16, 185, 129, 0.2);"
+                                    title="Max Push Rate">
+                                    <div
+                                        style="background: var(--primary); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);">
+                                        <ion-icon name="push-outline" style="font-size: 14px;"></ion-icon>
+                                    </div>
+                                    <input type="number" class="bg-transparent text-main border-none p-0"
+                                        style="width: 50px; font-weight: bold; text-align: left; font-size: 14px;"
+                                        value="5000">
+                                    <span class="text-muted text-xs font-bold"
+                                        style="letter-spacing: 0.5px;">req/s</span>
+                                </div>
+
+                                <!-- Get Limit -->
+                                <div class="flex-center text-sm"
+                                    style="background: rgba(59, 130, 246, 0.1); border-radius: 20px; padding: 4px 12px 4px 6px; gap: 6px; border: 1px solid rgba(59, 130, 246, 0.2);"
+                                    title="Max Get Rate">
+                                    <div
+                                        style="background: var(--success); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">
+                                        <ion-icon name="download-outline" style="font-size: 14px;"></ion-icon>
+                                    </div>
+                                    <input type="number" class="bg-transparent text-main border-none p-0"
+                                        style="width: 55px; font-weight: bold; text-align: left; font-size: 14px;"
+                                        value="10000">
+                                    <span class="text-muted text-xs font-bold"
+                                        style="letter-spacing: 0.5px;">req/s</span>
+                                </div>
+                            </div>
+                            <div class="text-sm font-bold flex-center"
+                                style="color:#a78bfa; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 16px;">
+                                <ion-icon name="analytics-outline"></ion-icon> Streaming: 12.4 GB/s
+                                <select class="form-select bg-transparent border-none text-xs p-0 pl-1"
+                                    style="min-width:100px; cursor: pointer; color: #a78bfa; background: rgba(167, 139, 250, 0.1); padding: 2px 6px; border-radius: 4px;">
+                                    <option>Last 24 Hours</option>
+                                    <option>Last 7 Days</option>
+                                    <option>Last 30 Days</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-xs btn-outline" style="border-color:#f97316; color:#f97316;"
+                                title="Open in Grafana">
+                                <ion-icon name="bar-chart-outline"></ion-icon> Grafana
+                            </button>
+                            <span class="badge-status online">Healthy</span>
+                            <button class="btn btn-xs btn-outline" title="Refresh Flow"><ion-icon
+                                    name="reload"></ion-icon></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="topology-wrapper">
+                            <div class="topology-inner" style="min-width: 1000px; height: 500px;">
+                                <!-- SVG Connections (Dynamically Rendered by JS) -->
+                                <svg class="topology-lines" id="topology-lines-svg" width="100%" height="100%"
+                                    viewBox="0 0 1000 500" preserveAspectRatio="none">
+                                    <defs>
+                                        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="28" refY="4"
+                                            orient="auto">
+                                            <polygon points="0 0, 8 4, 0 8" fill="rgba(16, 185, 129, 0.8)" />
+                                        </marker>
+                                        <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="28" refY="4"
+                                            orient="auto">
+                                            <polygon points="0 0, 8 4, 0 8" fill="rgba(59, 130, 246, 0.8)" />
+                                        </marker>
+                                        <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="28" refY="4"
+                                            orient="auto">
+                                            <polygon points="0 0, 8 4, 0 8" fill="rgba(239, 68, 68, 0.8)" />
+                                        </marker>
+                                    </defs>
+                                </svg>
+
+                                <!-- Nodes with Pod Config Onclick -->
+                                <!-- Nodes with Pod Config Onclick -->
+                                <!-- Producers Layer: Push, Kafka Consumer, Scheduler -->
+                                <div class="topo-node status-ok" id="node-push" style="left: 5%; top: 15%;"
+                                    onclick="openPodConfig('push-data', 2, 4)">
+                                    <div class="node-header metro-service">M</div>
+                                    <span class="node-label">push-data</span>
+                                </div>
+                                <div class="topo-node status-warning" id="node-kafka" style="left: 5%; top: 45%;"
+                                    onclick="openPodConfig('kafka-consumer', 6, 16)">
+                                    <div class="node-header metro-service">M<div class="node-alert"
+                                            title="Memory Warning"><ion-icon name="warning"></ion-icon></div>
+                                    </div>
+                                    <span class="node-label">kafka-consumer</span>
+                                </div>
+                                <div class="topo-node status-ok" id="node-schedule" style="left: 5%; top: 75%;"
+                                    onclick="openPodConfig('scheduler', 1, 2)">
+                                    <div class="node-header metro-service">M</div>
+                                    <span class="node-label">scheduler</span>
+                                </div>
+
+                                <!-- Get Data Aggregator -->
+                                <div class="topo-node status-ok" id="node-get" style="left: 22%; top: 45%;"
+                                    onclick="openPodConfig('get-data', 4, 8)">
+                                    <div class="node-header metro-service">M</div>
+                                    <span class="node-label">get-data</span>
+                                </div>
+
+                                <!-- Python Validate (Hub) -->
+                                <div class="topo-node status-ok" id="node-validate" style="left: 40%; top: 45%;"
+                                    onclick="openPodConfig('python-validate-1', 8, 32)">
+                                    <div class="node-header metro-service"
+                                        style="color:#00a8ff; border-style:solid; width: 64px; height: 64px;">M</div>
+                                    <span class="node-label">python-validate</span>
+                                </div>
+
+                                <!-- Optional Transform Layer (Top) -->
+                                <div class="topo-node status-ok" id="node-transform" style="left: 53%; top: 15%;"
+                                    onclick="openPodConfig('transform-data', 16, 64)">
+                                    <div class="node-header metro-service">M</div>
+                                    <span class="node-label">transform-data</span>
+                                </div>
+                                <div class="topo-node status-ok" id="node-ext-transform" style="left: 65%; top: 25%;"
+                                    onclick="openPodConfig('external-transform', 8, 32)">
+                                    <div class="node-header metro-service">M</div>
+                                    <span class="node-label">external-transform</span>
+                                </div>
+
+                                <!-- Informative Validate (Bottom Failover) -->
+                                <div class="topo-node status-error" id="node-fail" style="left: 53%; top: 75%;"
+                                    onclick="openPodConfig('informative-validate-err', 4, 8)">
+                                    <div class="node-header metro-service" style="color:var(--danger)">M</div>
+                                    <span class="node-label">informative-validate (fail)</span>
+                                </div>
+
+                                <!-- Publish / Storage Splits -->
+                                <div class="topo-node status-ok" id="node-publish" style="left: 85%; top: 30%;">
+                                    <div class="node-header kafka-topic"><ion-icon name="options-outline"></ion-icon>
+                                    </div>
+                                    <span class="node-label">publish</span>
+                                </div>
+                                <div class="topo-node status-ok" id="node-publish-store" style="left: 85%; top: 75%;"
+                                    onclick="openPodConfig('publish-storages', 4, 16)">
+                                    <div class="node-header metro-service">M</div>
+                                    <span class="node-label">publish-storages</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Directory -->
+                <div class="card col-span-2">
+                    <div class="card-header">
+                        <h3 id="group-owner-header">Group Owners (Pipeline 2 (Air))</h3>
+                    </div>
+                    <div class="card-body content-scrollable">
+                        <div class="client-grid">
+                            <div class="client-card">
+                                <div class="client-info">
+                                    <div class="client-avatar">F</div>
+                                    <div>
+                                        <h4>Finance Group</h4>
+                                        <p>Client/Owner: Sarah Jenkins</p>
+                                    </div>
+                                </div>
+                                <div class="client-pipelines">
+                                    <span class="tag">Rokak</span>
+                                    <span class="tag">Budget_Sync</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline"><ion-icon name="chatbubble-outline"></ion-icon>
+                                    Send Message</button>
+                            </div>
+
+                            <div class="client-card">
+                                <div class="client-info">
+                                    <div class="client-avatar">M</div>
+                                    <div>
+                                        <h4>Marketing Group</h4>
+                                        <p>Client/Owner: David Miller</p>
+                                    </div>
+                                </div>
+                                <div class="client-pipelines">
+                                    <span class="tag">Air</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline"><ion-icon name="chatbubble-outline"></ion-icon>
+                                    Send Message</button>
+                            </div>
+
+                            <div class="client-card">
+                                <div class="client-info">
+                                    <div class="client-avatar">S</div>
+                                    <div>
+                                        <h4>Sales Group</h4>
+                                        <p>Client/Owner: Amanda Roberts</p>
+                                    </div>
+                                </div>
+                                <div class="client-pipelines">
+                                    <span class="tag">Navy</span>
+                                    <span class="tag">Lead_Gen_API</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline"><ion-icon name="chatbubble-outline"></ion-icon>
+                                    Send Message</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB B: Business Dashboard -->
+        <div id="tab-business" class="tab-pane">
+            <div class="iframe-container-wrapper">
+                <div class="iframe-filters">
+                    <div class="filter-group">
+                        <label>Time Range</label>
+                        <select class="form-select">
+                            <option>Last 24 Hours</option>
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Year to Date</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Select Client</label>
+                        <select class="form-select">
+                            <option>All Clients</option>
+                            <option>Finance</option>
+                            <option>Marketing</option>
+                            <option>Sales</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary"><ion-icon name="filter-outline"></ion-icon> Apply Filters</button>
+                </div>
+
+                <div class="iframe-render-area">
+                    <!-- Placeholder for embedded Qlik dashboard -->
+                    <div class="iframe-placeholder">
+                        <ion-icon name="pie-chart-outline"></ion-icon>
+                        <h3>Embedded Business Intelligence Dashboard</h3>
+                        <p>Qlik dashboard iframe goes here</p>
+                    </div>
+                    <iframe src="about:blank" class="dashboard-iframe" title="Business Dashboard"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Client Add Modal (Add to existing pipeline) -->
+    <div class="modal" id="client-modal">
+        <div class="modal-header">
+            <h3>Assign Group to Pipeline</h3>
+            <button class="close-modal-btn" onclick="closeModal('client-modal')"><ion-icon
+                    name="close"></ion-icon></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-4">
+                <label class="form-label font-bold mb-2 display-block">Select Pipeline</label>
+                <select class="form-select w-full bg-input">
+                    <option>Pipeline 1 (Rokak)</option>
+                    <option selected>Pipeline 2 (Air)</option>
+                    <option>Pipeline 3 (Navy)</option>
+                </select>
+            </div>
+            <div class="form-group mb-4">
+                <label class="form-label font-bold mb-2 display-block">Select Groups (Multi-select)</label>
+                <div
+                    style="border:1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px; background: rgba(0,0,0,0.1);">
+                    <div class="chips-container mb-2" id="client-modal-groups"
+                        style="display:flex; flex-wrap:wrap; gap:8px;">
+                        <div class="chip bg-primary"
+                            style="background:#8b5cf6; padding: 4px 10px; border-radius: 16px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+                            <span class="chip-text">Marketing</span>
+                            <button class="chip-close"
+                                style="background:none;border:none;color:white;cursor:pointer;display:flex;"
+                                onclick="this.parentElement.remove();"><ion-icon name="close"></ion-icon></button>
+                        </div>
+                    </div>
+                    <select class="form-select w-full bg-input text-sm" id="client-group-adder" style="border:none;">
+                        <option value="">+ Add Group from DB...</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Data_Scientists">Data_Scientists</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('client-modal')">Cancel</button>
+            <button class="btn btn-primary" onclick="closeModal('client-modal')">Add to Pipeline</button>
+        </div>
+    </div>
+
+    <!-- Create Pipeline Modal -->
+    <div class="modal" id="pipeline-modal" style="width: 900px; max-width: 95vw;">
+        <div class="modal-header">
+            <h3>Create / Edit Pipeline</h3>
+            <button class="close-modal-btn" onclick="closeModal('pipeline-modal')"><ion-icon
+                    name="close"></ion-icon></button>
+        </div>
+        <div class="modal-body pb-0" style="display: flex; gap: 24px; min-height: 400px; padding: 0;">
+            <!-- Left Side: Config -->
+            <div style="flex: 1; padding: 24px; border-right: 1px solid var(--border-color);">
+                <div class="form-group mb-4">
+                    <label class="form-label font-bold mb-2 display-block">Pipeline Name</label>
+                    <input type="text" class="form-input w-full bg-input" placeholder="e.g. Bronze_to_Silver_ETL">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label font-bold mb-2 display-block">Pipeline Description</label>
+                    <textarea class="form-input w-full bg-input" rows="2"
+                        placeholder="Describe the pipeline purpose. You can edit this later."></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label font-bold mb-2 display-block">Pipeline Type</label>
+                    <div style="display:flex; gap: 16px;">
+                        <label class="custom-radio">
+                            <input type="radio" name="pipe_type" checked> Stream
+                        </label>
+                        <label class="custom-radio">
+                            <input type="radio" name="pipe_type"> Batch
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label font-bold mb-2 display-block">Select Initial Groups</label>
+                    <div
+                        style="border:1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px; background: rgba(0,0,0,0.1);">
+                        <div class="chips-container mb-2" id="pipeline-groups-list"
+                            style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                        <select class="form-select w-full bg-input text-sm" id="group-adder" style="border:none;">
+                            <option value="">+ Add Group...</option>
+                            <option value="GroupA">Marketing</option>
+                            <option value="GroupB">Finance</option>
+                            <option value="GroupC">Sales</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="custom-checkbox flex-center" style="gap:8px; justify-content: flex-start;">
+                        <input type="checkbox" id="pipeline-custom-resources"
+                            onchange="document.getElementById('pipeline-resource-config').style.display = this.checked ? 'block' : 'none';"
+                            checked>
+                        <span class="checkmark" style="position:relative;top:0;"></span>
+                        <span class="font-bold">Configure Custom Resources on Creation</span>
+                    </label>
+                </div>
+                <!-- Dynamic Resource Config Box (Visible when checked) -->
+                <div id="pipeline-resource-config"
+                    style="margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div class="mb-3">
+                        <label class="text-sm text-muted mb-1 display-block">Global CPU Limits (Cores)</label>
+                        <input type="range" min="1" max="64" value="16" class="w-full"
+                            oninput="this.nextElementSibling.innerText = this.value + ' Cores'"
+                            style="accent-color: var(--primary);">
+                        <div class="text-main font-bold mt-1 text-sm text-right">16 Cores</div>
+                    </div>
+                    <div>
+                        <label class="text-sm text-muted mb-1 display-block">Global RAM Limits (GB)</label>
+                        <input type="range" min="2" max="256" value="64" class="w-full"
+                            oninput="this.nextElementSibling.innerText = this.value + ' GB'"
+                            style="accent-color: var(--primary);">
+                        <div class="text-main font-bold mt-1 text-sm text-right">64 GB</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Group Properties Grid -->
+            <div style="flex: 1; padding: 24px; background: rgba(0,0,0,0.15);">
+                <h4 class="mb-3 font-bold">Assigned Group Properties</h4>
+                <div class="form-group mb-3 relative">
+                    <ion-icon name="search"
+                        style="position:absolute; left:12px; top:12px; color:var(--text-muted);"></ion-icon>
+                    <input type="text" class="form-input w-full bg-input" style="padding-left: 36px;"
+                        placeholder="Search group properties...">
+                </div>
+
+                <table class="data-table border-all" style="font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Push Limit</th>
+                            <th>Pull Limit</th>
+                            <th class="text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="group-properties-table">
+                        <tr>
+                            <td><span class="badge-status online"
+                                    style="background:transparent; border:1px solid var(--border-color);">Marketing</span>
+                            </td>
+                            <td>10K/s</td>
+                            <td>50K/s</td>
+                            <td class="text-right"><button class="btn btn-xs btn-ghost"><ion-icon
+                                        name="create-outline"></ion-icon></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="text-xs text-muted mt-3"><ion-icon name="information-circle"></ion-icon> You can edit these
+                    properties after adding a group.</p>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 24px; border-top: 1px solid var(--border-color);">
+            <button class="btn btn-outline" onclick="closeModal('pipeline-modal')">Cancel</button>
+            <button class="btn btn-primary" onclick="closeModal('pipeline-modal')">Save Pipeline</button>
+        </div>
+    </div>
+
+    <!-- Modal cleanup complete -->
+
+    <!-- Pod Config Modal -->
+    <div class="modal" id="pod-config-modal">
+        <div class="modal-header">
+            <h3>Configure Pod Resources: <span id="pod-modal-title" class="text-primary">Service</span></h3>
+            <button class="close-modal-btn" onclick="closeModal('pod-config-modal')"><ion-icon
+                    name="close"></ion-icon></button>
+        </div>
+        <div class="modal-body">
+            <p class="text-muted mb-4">Scale up or limit resources for this microservice inside the cluster.</p>
+            <div class="flex-between mb-4 mt-2"
+                style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <span class="text-xs text-muted font-bold text-uppercase">Cluster Capacity</span>
+                    <span class="text-sm font-bold"><span style="color:var(--success)">210</span> / 500 Cores
+                        Used</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px; text-align:right;">
+                    <span class="text-xs text-muted font-bold text-uppercase">Pipeline Assignment</span>
+                    <span class="text-sm font-bold text-primary" id="pod-modal-pipeline">Pipeline 2 (Air)</span>
+                </div>
+            </div>
+
+            <div class="resource-slider-container"
+                style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: var(--radius-md);">
+                <div class="mb-4">
+                    <label class="text-muted text-sm flex-between"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>CPU Cores Allocated</span>
+                        <input type="number" id="pod-cpu-val"
+                            class="form-input bg-transparent text-main font-bold p-0 border-none"
+                            style="width: 50px; text-align: right; text-decoration: underline; text-decoration-style: dashed; text-decoration-color: var(--text-muted); font-size: 15px;"
+                            value="2" oninput="document.getElementById('pod-cpu-slider').value = this.value">
+                    </label>
+                    <input type="range" id="pod-cpu-slider" min="1" max="32" value="2" class="w-full mt-2"
+                        oninput="document.getElementById('pod-cpu-val').value = this.value"
+                        style="width: 100%; accent-color: var(--primary);">
+                </div>
+                <div>
+                    <label class="text-muted text-sm flex-between"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Memory (GB)</span>
+                        <input type="number" id="pod-mem-val"
+                            class="form-input bg-transparent text-main font-bold p-0 border-none"
+                            style="width: 50px; text-align: right; text-decoration: underline; text-decoration-style: dashed; text-decoration-color: var(--text-muted); font-size: 15px;"
+                            value="8" oninput="document.getElementById('pod-mem-slider').value = this.value">
+                    </label>
+                    <input type="range" id="pod-mem-slider" min="1" max="128" value="8" step="1" class="w-full mt-2"
+                        oninput="document.getElementById('pod-mem-val').value = this.value"
+                        style="width: 100%; accent-color: var(--primary);">
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <label class="custom-checkbox">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    <span class="ml-2 mt-1 display-inline-block">Enable Auto-Scaling</span>
+                </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('pod-config-modal')">Cancel</button>
+            <button class="btn btn-warning" onclick="closeModal('pod-config-modal')"><ion-icon
+                    name="rocket-outline"></ion-icon> Apply Resources</button>
+        </div>
+    </div>
+
+    <!-- Modals Overlay -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+
+    <!-- Source Configuration Modal -->
+    <div class="modal" id="source-modal">
+        <div class="modal-header">
+            <h3>Source Configuration</h3>
+            <button class="close-modal-btn" onclick="closeModal('source-modal')"><ion-icon
+                    name="close"></ion-icon></button>
+        </div>
+        <div class="modal-body">
+
+            <div class="form-group flex-between config-toggle">
+                <div>
+                    <label class="font-bold">Database Source Config</label>
+                    <p class="text-sm text-muted">Manage settings for data ingestion.</p>
+                </div>
+                <!-- Toggle switch labeled "Upsert Source" -->
+                <label class="toggle-switch">
+                    <span class="toggle-label mr-3">Upsert Source</span>
+                    <input type="checkbox" id="toggle-upsert">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <h4 class="mt-4 mb-2">Schema Configuration</h4>
+            <div class="table-container">
+                <table class="data-table border-all">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Data Type</th>
+                            <th>Description</th>
+                            <th class="text-center">Primary Key</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="form-input" value="user_id"></td>
+                            <td>
+                                <select class="form-select">
+                                    <option>STRING</option>
+                                    <option selected>INTEGER</option>
+                                    <option>TIMESTAMP</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-input" value="Unique identifier"></td>
+                            <td class="text-center">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="form-input" value="event_name"></td>
+                            <td>
+                                <select class="form-select">
+                                    <option selected>STRING</option>
+                                    <option>INTEGER</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-input" value="Name of the action"></td>
+                            <td class="text-center">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="form-input" value="created_at"></td>
+                            <td>
+                                <select class="form-select">
+                                    <option>STRING</option>
+                                    <option selected>TIMESTAMP</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-input" value="Event time"></td>
+                            <td class="text-center">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-sm btn-ghost mt-2"><ion-icon name="add"></ion-icon> Add Field</button>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('source-modal')">Cancel</button>
+            <button class="btn btn-primary" onclick="closeModal('source-modal')">Save Configuration</button>
+        </div>
+    </div>
+
+    <!-- Permissions Management Modal -->
+    <div class="modal" id="permissions-modal" style="max-width: 800px;">
+        <div class="modal-header">
+            <h3>Permissions Management</h3>
+            <button class="close-modal-btn" onclick="closeModal('permissions-modal')"><ion-icon
+                    name="close"></ion-icon></button>
+        </div>
+        <div class="modal-body pb-0">
+            <p class="text-muted mb-4">Assign access levels across user groups.</p>
+
+            <table class="data-table border-all permissions-table" id="permissions-table">
+                <thead>
+                    <tr>
+                        <th>User Group</th>
+                        <th class="text-center">Owner</th>
+                        <th class="text-center">Viewer</th>
+                        <th class="text-center">Consumer</th>
+                        <th class="text-center">Metadata</th>
+                        <th class="text-center">No permission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Admin_Core</strong></td>
+                        <td class="text-center"><input type="radio" name="perm_admin" value="owner" checked></td>
+                        <td class="text-center"><input type="radio" name="perm_admin" value="viewer"></td>
+                        <td class="text-center"><input type="radio" name="perm_admin" value="consumer"></td>
+                        <td class="text-center"><input type="radio" name="perm_admin" value="metadata"></td>
+                        <td class="text-center"><input type="radio" name="perm_admin" value="none"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data_Scientists</strong></td>
+                        <td class="text-center"><input type="radio" name="perm_ds" value="owner"></td>
+                        <td class="text-center"><input type="radio" name="perm_ds" value="viewer"></td>
+                        <td class="text-center"><input type="radio" name="perm_ds" value="consumer" checked></td>
+                        <td class="text-center"><input type="radio" name="perm_ds" value="metadata"></td>
+                        <td class="text-center"><input type="radio" name="perm_ds" value="none"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Marketing_Analysts</strong></td>
+                        <td class="text-center"><input type="radio" name="perm_mkt" value="owner"></td>
+                        <td class="text-center"><input type="radio" name="perm_mkt" value="viewer" checked></td>
+                        <td class="text-center"><input type="radio" name="perm_mkt" value="consumer"></td>
+                        <td class="text-center"><input type="radio" name="perm_mkt" value="metadata"></td>
+                        <td class="text-center"><input type="radio" name="perm_mkt" value="none"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>External_Contractors</strong></td>
+                        <td class="text-center"><input type="radio" name="perm_ext" value="owner"></td>
+                        <td class="text-center"><input type="radio" name="perm_ext" value="viewer"></td>
+                        <td class="text-center"><input type="radio" name="perm_ext" value="consumer"></td>
+                        <td class="text-center"><input type="radio" name="perm_ext" value="metadata"></td>
+                        <td class="text-center"><input type="radio" name="perm_ext" value="none" checked></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="all-row">
+                        <td><strong>ALL</strong></td>
+                        <td class="text-center"><button class="btn btn-xs btn-outline w-full"
+                                data-col="owner">SET</button></td>
+                        <td class="text-center"><button class="btn btn-xs btn-outline w-full"
+                                data-col="viewer">SET</button></td>
+                        <td class="text-center"><button class="btn btn-xs btn-outline w-full"
+                                data-col="consumer">SET</button></td>
+                        <td class="text-center"><button class="btn btn-xs btn-outline w-full"
+                                data-col="metadata">SET</button></td>
+                        <td class="text-center"><button class="btn btn-xs btn-outline w-full"
+                                data-col="none">SET</button></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="modal-footer mt-4">
+            <button class="btn btn-outline" onclick="closeModal('permissions-modal')">Discard</button>
+            <button class="btn btn-primary" onclick="closeModal('permissions-modal')">Apply Changes</button>
+        </div>
+    </div>
+
+    <!-- Developer Team Modal -->
+    <div class="modal" id="team-modal" style="max-width: 800px; padding: 0;">
+        <div class="modal-header"
+            style="position: absolute; top: 10px; right: 10px; z-index: 10; border: none; background: transparent;">
+            <button class="close-modal-btn" onclick="closeModal('team-modal')"
+                style="background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><ion-icon
+                    name="close"></ion-icon></button>
+        </div>
+        <div class="modal-body" style="padding: 0;">
+            <img src="team.png" alt="Developer Team"
+                style="width: 100%; display: block; border-radius: var(--radius-lg);">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Pipeline {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  pushLimit   Int
+  pullLimit   Int
+  groups      Group[]
+  pods        Pod[]
+}
+
+model Group {
+  id         String    @id @default(uuid())
+  name       String
+  ownerName  String
+  pipelineId String
+  pipeline   Pipeline  @relation(fields: [pipelineId], references: [id])
+}
+
+model Pod {
+  id         String   @id @default(uuid())
+  name       String
+  cpuLimit   Int
+  memLimit   Int
+  pipelineId String
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   // "request" or "status"
+  message   String
+  status    String   // "pending", "approved", "rejected"
+  createdAt DateTime @default(now())
+}
