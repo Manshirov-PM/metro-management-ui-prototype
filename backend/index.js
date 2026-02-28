@@ -81,6 +81,49 @@ app.put('/api/pods/:id/resources', async (req, res) => {
     }
 });
 
+// Create a new pipeline
+app.post('/api/pipelines', async (req, res) => {
+    const { name, description, pushLimit, pullLimit } = req.body;
+    try {
+        const pipeline = await prisma.pipeline.create({
+            data: {
+                name,
+                description,
+                pushLimit: pushLimit || 10000,
+                pullLimit: pullLimit || 50000,
+            }
+        });
+        // Auto-seed some default pods for the new pipeline to make it functional
+        await prisma.pod.createMany({
+            data: [
+                { name: 'push-data', cpuLimit: 2, memLimit: 8, pipelineId: pipeline.id },
+                { name: 'kafka-consumer', cpuLimit: 4, memLimit: 16, pipelineId: pipeline.id },
+            ]
+        });
+        res.json(pipeline);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Assign a group/client to an existing pipeline
+app.post('/api/pipelines/:id/groups', async (req, res) => {
+    const { id } = req.params;
+    const { groupName, ownerName } = req.body;
+    try {
+        const group = await prisma.group.create({
+            data: {
+                name: groupName,
+                ownerName: ownerName || 'Unknown Owner',
+                pipelineId: id
+            }
+        });
+        res.json(group);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Backend API running on http://localhost:${port}`);
 });

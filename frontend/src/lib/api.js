@@ -24,4 +24,14 @@ export const updatePodResources = async (id, cpuLimit, memLimit) => {
     return data;
 };
 
+export const createPipeline = async (pipelineData) => {
+    const { data } = await api.post('/pipelines', pipelineData);
+    return data;
+};
+
+export const assignGroupToPipeline = async (pipelineId, groupData) => {
+    const { data } = await api.post(`/pipelines/${pipelineId}/groups`, groupData);
+    return data;
+};
+
 export default api;
