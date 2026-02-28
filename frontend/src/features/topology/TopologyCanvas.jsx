@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { LucideSettings, LucideAlertTriangle, LucideServer, LucideDatabase } from 'lucide-react';
+import { LucideSettings, LucideAlertTriangle, LucideServer, LucideDatabase, LucideEdit2, LucideCheck } from 'lucide-react';
 
 const INITIAL_NODES = [
     { id: 'push-data', label: 'push-data', x: 100, y: 100, type: 'kafka-topic' },
@@ -142,7 +142,7 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
             onMouseLeave={handleMouseUp}
             ref={containerRef}
             onMouseDown={(e) => handleMouseDown(e)}
-            style={{ cursor: 'grab', background: 'var(--bgMain)', backgroundImage: 'radial-gradient(circle at 10px 10px, rgba(139, 92, 246, 0.05) 2px, transparent 0)', backgroundSize: '40px 40px', backgroundPosition: `${pan.x}px ${pan.y}px` }}
+            style={{ cursor: 'grab', background: 'var(--color-bgMain, #0a0812)', backgroundImage: 'radial-gradient(circle at 10px 10px, rgba(139, 92, 246, 0.05) 2px, transparent 0)', backgroundSize: '40px 40px', backgroundPosition: `${pan.x}px ${pan.y}px` }}
         >
             <div className="absolute top-4 left-4 z-40 flex flex-col gap-2 pointer-events-auto">
                 <div className="bg-bgInput/90 backdrop-blur px-4 py-2 rounded-xl border border-borderC shadow-lg flex flex-col max-w-[300px]">
@@ -160,21 +160,37 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
                 <div className="flex gap-2 items-center">
                     {/* Rate Limits Module */}
                     <div className="bg-bgInput/90 backdrop-blur p-1 rounded-full border border-borderC shadow-lg flex items-center gap-1">
-                        <div className="flex items-center text-sm bg-success/10 rounded-full py-1 pr-3 pl-1.5 gap-1.5 border border-success/20 cursor-pointer hover:bg-success/20 transition-colors" title="Max Push Rate">
-                            <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_10px_rgba(139,92,246,0.5)] text-[10px] font-bold">
-                                PSH
+                        {/* Push Limit */}
+                        {isEditingPush ? (
+                            <div className="flex items-center text-sm bg-success/10 rounded-full py-1 pr-1 pl-1.5 gap-1 border border-success/40">
+                                <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold">PSH</div>
+                                <input type="number" autoFocus value={editPushVal} onChange={e => setEditPushVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && setIsEditingPush(false)} className="w-16 bg-transparent border-b border-success outline-none text-white text-center font-bold text-sm" />
+                                <button onClick={() => setIsEditingPush(false)} className="bg-success text-white p-1 rounded-full border-none cursor-pointer flex"><LucideCheck size={12} /></button>
                             </div>
-                            <strong className="text-textMain">{activePipeline?.pushLimit?.toLocaleString() || '10,000'}</strong>
-                            <span className="text-textMuted text-xs font-bold">/s</span>
-                        </div>
+                        ) : (
+                            <div className="flex items-center text-sm bg-success/10 rounded-full py-1 pr-2 pl-1.5 gap-1.5 border border-success/20 cursor-pointer hover:bg-success/20 transition-colors group" onClick={() => setIsEditingPush(true)} title="Edit Max Push Rate">
+                                <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_10px_rgba(139,92,246,0.5)] text-[10px] font-bold">PSH</div>
+                                <strong className="text-textMain">{Number(editPushVal || 10000).toLocaleString()}</strong>
+                                <span className="text-textMuted text-xs font-bold">/s</span>
+                                <LucideEdit2 size={12} className="text-textMuted opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
+                            </div>
+                        )}
 
-                        <div className="flex items-center text-sm bg-info/10 rounded-full py-1 pr-3 pl-1.5 gap-1.5 border border-info/20 cursor-pointer hover:bg-info/20 transition-colors" title="Max Pull Rate">
-                            <div className="bg-secondary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)] text-[10px] font-bold">
-                                GET
+                        {/* Pull Limit */}
+                        {isEditingPull ? (
+                            <div className="flex items-center text-sm bg-info/10 rounded-full py-1 pr-1 pl-1.5 gap-1 border border-info/40">
+                                <div className="bg-secondary text-white rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold">GET</div>
+                                <input type="number" autoFocus value={editPullVal} onChange={e => setEditPullVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && setIsEditingPull(false)} className="w-16 bg-transparent border-b border-info outline-none text-white text-center font-bold text-sm" />
+                                <button onClick={() => setIsEditingPull(false)} className="bg-info text-white p-1 rounded-full border-none cursor-pointer flex"><LucideCheck size={12} /></button>
                             </div>
-                            <strong className="text-textMain">{activePipeline?.pullLimit?.toLocaleString() || '50,000'}</strong>
-                            <span className="text-textMuted text-xs font-bold">/s</span>
-                        </div>
+                        ) : (
+                            <div className="flex items-center text-sm bg-info/10 rounded-full py-1 pr-2 pl-1.5 gap-1.5 border border-info/20 cursor-pointer hover:bg-info/20 transition-colors group" onClick={() => setIsEditingPull(true)} title="Edit Max Pull Rate">
+                                <div className="bg-secondary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)] text-[10px] font-bold">GET</div>
+                                <strong className="text-textMain">{Number(editPullVal || 50000).toLocaleString()}</strong>
+                                <span className="text-textMuted text-xs font-bold">/s</span>
+                                <LucideEdit2 size={12} className="text-textMuted opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
+                            </div>
+                        )}
                     </div>
 
                     {/* Data Streaming Metric */}

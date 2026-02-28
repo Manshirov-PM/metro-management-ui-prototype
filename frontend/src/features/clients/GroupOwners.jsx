@@ -4,9 +4,13 @@ import { LucideMessageCircle } from 'lucide-react';
 export default function GroupOwners({ activePipeline }) {
     // Mock data representing database relationship
     const groups = [
-        { name: 'Finance Group', owner: 'Sarah Jenkins', avatar: 'F', pipelines: ['Rokak', 'Budget_Sync'] },
-        { name: 'Marketing Group', owner: 'David Miller', avatar: 'M', pipelines: ['Air'] },
-        { name: 'Sales Group', owner: 'Amanda Roberts', avatar: 'S', pipelines: ['Navy', 'Lead_Gen_API'] }
+        { name: 'Finance Group', owner: 'Sarah Jenkins', avatar: 'F', pipelines: ['Rokak', 'Budget_Sync', 'Fraud_Detect'] },
+        { name: 'Marketing Group', owner: 'David Miller', avatar: 'M', pipelines: ['Air', 'Social_Feed'] },
+        { name: 'Sales Group', owner: 'Amanda Roberts', avatar: 'S', pipelines: ['Navy', 'Lead_Gen_API'] },
+        { name: 'Analytics Team', owner: 'Jason Lee', avatar: 'A', pipelines: ['Rokak', 'Data_Warehouse_Load'] },
+        { name: 'HR Department', owner: 'Emily Chen', avatar: 'H', pipelines: ['Payroll_Sync', 'Employee_Onboarding'] },
+        { name: 'Engineering Core', owner: 'Michael Scott', avatar: 'E', pipelines: ['Air', 'Telemetry_Stream', 'Navy'] },
+        { name: 'Customer Support', owner: 'Rachel Green', avatar: 'C', pipelines: ['Ticket_Ingest', 'Feedback_Loop'] }
     ];
 
     // Filter groups if they belong to the active pipeline

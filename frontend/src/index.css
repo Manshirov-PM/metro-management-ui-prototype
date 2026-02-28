@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-bgMain: #0a0812;
+  --color-bgCard: #161324;
+  --color-bgInput: #231f38;
+  --color-borderC: #372f54;
+  --color-primary: #8b5cf6;
+  --color-primaryHover: #7c3aed;
+}
+
 @layer base {
   body {
     @apply bg-bgMain text-textMain min-h-screen m-0 pt-16 font-sans;

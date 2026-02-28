@@ -12,12 +12,21 @@ import AddClientModal from './components/modals/AddClientModal'
 import CreatePipelineModal from './components/modals/CreatePipelineModal'
 import TeamModal from './components/modals/TeamModal'
 import ThemeChooser from './components/ThemeChooser'
-import { LucidePlusCircle, LucideUserPlus } from 'lucide-react'
+import { LucidePlusCircle, LucideUserPlus, LucideCheckCircle } from 'lucide-react'
 
 function App() {
   const [pipelines, setPipelines] = useState([])
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Layout State
+  const [activeTab, setActiveTab] = useState('admin')
+  const [toastMessage, setToastMessage] = useState(null)
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  }
 
   // Topology State
   const [selectedPipelineId, setSelectedPipelineId] = useState(null)
@@ -86,53 +95,100 @@ function App() {
         </div>
       </header>
 
-      <main className="p-8 max-w-[1400px] mx-auto mt-16 pt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold tracking-tight">Infrastructure Overview</h2>
-          <div className="flex gap-3">
-            <button className="btn btn-secondary flex items-center gap-2" onClick={() => setIsAddClientOpen(true)}>
-              <LucideUserPlus size={16} /> Add Client
-            </button>
-            <button className="btn btn-primary shadow-lg shadow-primary/20 flex items-center gap-2" onClick={() => setIsCreatePipelineOpen(true)}>
-              <LucidePlusCircle size={16} /> Create Pipeline
-            </button>
+      {/* Main Tabs Navigation */}
+      <div className="border-b border-borderC bg-bgCard mt-16 sticky top-16 z-40 px-8 flex gap-8">
+        <button
+          className={`py-4 font-bold border-b-2 transition-colors cursor-pointer bg-transparent ${activeTab === 'admin' ? 'border-primary text-primary' : 'border-transparent text-textMuted hover:text-white'}`}
+          onClick={() => setActiveTab('admin')}
+        >
+          Platform Administration
+        </button>
+        <button
+          className={`py-4 font-bold border-b-2 transition-colors cursor-pointer bg-transparent ${activeTab === 'business' ? 'border-primary text-primary' : 'border-transparent text-textMuted hover:text-white'}`}
+          onClick={() => setActiveTab('business')}
+        >
+          Business Dashboard
+        </button>
+      </div>
+
+      <main className="p-8 max-w-[1400px] mx-auto pt-8">
+        {activeTab === 'admin' && (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold tracking-tight">Infrastructure Overview</h2>
+              <div className="flex gap-3">
+                <button className="btn btn-secondary flex items-center gap-2" onClick={() => setIsAddClientOpen(true)}>
+                  <LucideUserPlus size={16} /> Add Client
+                </button>
+                <button className="btn btn-primary shadow-lg shadow-primary/20 flex items-center gap-2" onClick={() => setIsCreatePipelineOpen(true)}>
+                  <LucidePlusCircle size={16} /> Create Pipeline
+                </button>
+              </div>
+            </div>
+
+            <SystemHealth />
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <PipelineTable pipelines={pipelines} />
+
+              <div className="flex flex-col gap-6">
+                <ResourceMonitoring onScaleUp={handleNodeClick} />
+                <SlaPerformance />
+              </div>
+            </div>
+
+            {/* Microservices Interactive Topology */}
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold tracking-tight">Interactive Topology</h2>
+
+                <select
+                  className="bg-bgInput border border-borderC text-textMain rounded-md px-4 py-2 text-sm font-bold focus:outline-none focus:border-primary"
+                  value={selectedPipelineId || ''}
+                  onChange={e => setSelectedPipelineId(e.target.value)}
+                >
+                  <optgroup label="Pipelines">
+                    {pipelines.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+
+              <TopologyCanvas activePipeline={activePipeline} onNodeClick={handleNodeClick} />
+            </div>
+
+            {/* Group Owners Directory (Clients) */}
+            <GroupOwners activePipeline={activePipeline} />
+          </>
+        )}
+
+        {/* Business Dashboard View */}
+        {activeTab === 'business' && (
+          <div className="card h-[800px]">
+            <div className="card-header bg-bgCard border-b border-borderC px-6 py-4 flex items-center justify-between">
+              <div>
+                <h3 className="m-0 text-lg text-primary font-bold tracking-tight">Qlik Business Insights</h3>
+                <p className="text-textMuted text-xs m-0">Live aggregated metrics and client analytics mapping.</p>
+              </div>
+            </div>
+            <div className="card-body p-0 bg-white">
+              <iframe
+                src="https://sense-demo.qlik.com/single/?appid=1333cc5e-6962-4b71-9f93-fb3d83764b85&sheet=b3887c12-70b9-4a0b-a010-85f26ff0167c&opt=ctxmenu,currsel"
+                className="w-full h-full border-none"
+                title="Qlik Dashboard"
+              ></iframe>
+            </div>
           </div>
-        </div>
+        )}
 
-        <SystemHealth />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <PipelineTable pipelines={pipelines} />
-
-          <div className="flex flex-col gap-6">
-            <ResourceMonitoring onScaleUp={handleNodeClick} />
-            <SlaPerformance />
+        {/* Global Success Toast */}
+        {toastMessage && (
+          <div className="fixed bottom-8 right-8 bg-success font-bold text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-[100] border border-success/50 backdrop-blur-md">
+            <LucideCheckCircle size={20} />
+            <span>{toastMessage}</span>
           </div>
-        </div>
-
-        {/* Microservices Interactive Topology */}
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold tracking-tight">Interactive Topology</h2>
-
-            <select
-              className="bg-bgInput border border-borderC text-textMain rounded-md px-4 py-2 text-sm font-bold focus:outline-none focus:border-primary"
-              value={selectedPipelineId || ''}
-              onChange={e => setSelectedPipelineId(e.target.value)}
-            >
-              <optgroup label="Pipelines">
-                {pipelines.map(p => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </optgroup>
-            </select>
-          </div>
-
-          <TopologyCanvas activePipeline={activePipeline} onNodeClick={handleNodeClick} />
-        </div>
-
-        {/* Group Owners Directory (Clients) */}
-        <GroupOwners activePipeline={activePipeline} />
+        )}
 
         {/* Modals */}
         <PodConfigModal
@@ -142,8 +198,17 @@ function App() {
           pipeline={activePipeline}
           clusterStats={{ used: 210, total: 500 }}
         />
-        <AddClientModal isOpen={isAddClientOpen} onClose={() => setIsAddClientOpen(false)} pipelines={pipelines} onSuccess={loadData} />
-        <CreatePipelineModal isOpen={isCreatePipelineOpen} onClose={() => setIsCreatePipelineOpen(false)} onSuccess={loadData} />
+        <AddClientModal
+          isOpen={isAddClientOpen}
+          onClose={() => setIsAddClientOpen(false)}
+          pipelines={pipelines}
+          onSuccess={() => { setIsAddClientOpen(false); showToast("Client access successfully linked to Pipeline!"); loadData(); }}
+        />
+        <CreatePipelineModal
+          isOpen={isCreatePipelineOpen}
+          onClose={() => setIsCreatePipelineOpen(false)}
+          onSuccess={() => { setIsCreatePipelineOpen(false); showToast("New Core Pipeline provisioned across clusters!"); loadData(); }}
+        />
         <TeamModal isOpen={isTeamModalOpen} onClose={() => setIsTeamModalOpen(false)} />
       </main>
     </div>
