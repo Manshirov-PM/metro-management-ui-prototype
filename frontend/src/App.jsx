@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { fetchPipelines, fetchNotifications } from './lib/api'
 import PipelineTable from './components/PipelineTable'
+import ResourceMonitoring from './components/ResourceMonitoring'
+import SlaPerformance from './components/SlaPerformance'
 import NotificationCenter from './components/NotificationCenter'
 import TopologyCanvas from './features/topology/TopologyCanvas'
 import PodConfigModal from './components/modals/PodConfigModal'
@@ -9,6 +11,7 @@ import GroupOwners from './features/clients/GroupOwners'
 import AddClientModal from './components/modals/AddClientModal'
 import CreatePipelineModal from './components/modals/CreatePipelineModal'
 import TeamModal from './components/modals/TeamModal'
+import ThemeChooser from './components/ThemeChooser'
 import { LucidePlusCircle, LucideUserPlus } from 'lucide-react'
 
 function App() {
@@ -73,6 +76,7 @@ function App() {
         </div>
 
         <div className="flex items-center gap-4">
+          <ThemeChooser />
           {/* Reusable Notification Center Component */}
           <NotificationCenter notifications={notifications} />
 
@@ -97,32 +101,12 @@ function App() {
 
         <SystemHealth />
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Reusable Pipeline Table Component */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <PipelineTable pipelines={pipelines} />
 
-          {/* Placeholder for Resource Monitoring */}
-          <div className="card">
-            <div className="card-header">
-              <h3>Resource Monitoring</h3>
-            </div>
-            <div className="card-body">
-              {pipelines.flatMap(p => p.pods).map(pod => (
-                <div key={pod.id} className="mb-4">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-bold">{pod.name}</span>
-                    <span className="text-warning">85% Utilized</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
-                    <div className="h-full bg-warning" style={{ width: '85%' }}></div>
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-textMuted">Memory hitting threshold</span>
-                    <button className="btn bg-primary/20 text-primary hover:bg-primary hover:text-white px-2 py-1 text-xs rounded transition-colors">Scale Up</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-col gap-6">
+            <ResourceMonitoring onScaleUp={handleNodeClick} />
+            <SlaPerformance />
           </div>
         </div>
 

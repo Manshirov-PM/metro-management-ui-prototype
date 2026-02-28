@@ -7,14 +7,14 @@ export default {
     theme: {
         extend: {
             colors: {
-                bgMain: '#0a0812',
-                bgCard: '#161324',
-                bgInput: '#231f38',
-                borderC: '#372f54',
+                bgMain: 'var(--color-bgMain, #0a0812)',
+                bgCard: 'var(--color-bgCard, #161324)',
+                bgInput: 'var(--color-bgInput, #231f38)',
+                borderC: 'var(--color-borderC, #372f54)',
                 textMain: '#f8fafc',
                 textMuted: '#94a3b8',
-                primary: '#8b5cf6',
-                primaryHover: '#7c3aed',
+                primary: 'var(--color-primary, #8b5cf6)',
+                primaryHover: 'var(--color-primaryHover, #7c3aed)',
                 secondary: '#3b82f6',
                 success: '#10b981',
                 warning: '#f59e0b',

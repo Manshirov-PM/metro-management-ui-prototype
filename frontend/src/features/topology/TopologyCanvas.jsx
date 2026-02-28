@@ -2,20 +2,20 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { LucideSettings, LucideAlertTriangle, LucideServer, LucideDatabase } from 'lucide-react';
 
 const INITIAL_NODES = [
-    { id: 'push-data', label: 'push-data', x: 250, y: 100, type: 'kafka-topic' },
-    { id: 'kafka-consumer', label: 'kafka-consumer', x: 250, y: 220, type: 'metro-service' },
-    { id: 'scheduler', label: 'scheduler', x: 250, y: 340, type: 'metro-service' },
-    { id: 'python-validate-1', label: 'python-validate-1', x: 450, y: 220, type: 'metro-service' },
-    { id: 'transform-data', label: 'transform-data', x: 550, y: 100, type: 'metro-service', optional: true },
-    { id: 'external-transform', label: 'external-transform', x: 700, y: 100, type: 'metro-service', optional: true },
-    { id: 'node-fail', label: 'informative-validate (fail)', x: 550, y: 340, type: 'error' },
-    { id: 'node-publish', label: 'publish', x: 850, y: 220, type: 'kafka-topic' },
-    { id: 'node-publish-store', label: 'publish-storages', x: 800, y: 340, type: 'metro-service' }
+    { id: 'push-data', label: 'push-data', x: 100, y: 100, type: 'kafka-topic' },
+    { id: 'kafka-consumer', label: 'kafka-consumer', x: 100, y: 220, type: 'metro-service' },
+    { id: 'scheduler', label: 'scheduler', x: 100, y: 340, type: 'metro-service' },
+    { id: 'python-validate-1', label: 'python-validate-1', x: 350, y: 220, type: 'metro-service', needsScaling: true },
+    { id: 'transform-data', label: 'transform-data', x: 500, y: 100, type: 'metro-service', optional: true },
+    { id: 'external-transform', label: 'external-transform', x: 650, y: 100, type: 'metro-service', optional: true },
+    { id: 'node-fail', label: 'informative-validate (fail)', x: 500, y: 340, type: 'error' },
+    { id: 'node-publish', label: 'publish', x: 700, y: 220, type: 'kafka-topic' },
+    { id: 'node-publish-store', label: 'publish-storages', x: 700, y: 340, type: 'metro-service' }
 ];
 
 const CONNECTIONS = [
-    { from: 'push-data', to: 'kafka-consumer' },
-    { from: 'kafka-consumer', to: 'scheduler' },
+    { from: 'push-data', to: 'python-validate-1' },
+    { from: 'kafka-consumer', to: 'python-validate-1' },
     { from: 'scheduler', to: 'python-validate-1' },
     { from: 'python-validate-1', to: 'transform-data' },
     { from: 'transform-data', to: 'external-transform' },
@@ -231,7 +231,8 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
                         <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold shadow-xl border-2
                ${node.type === 'kafka-topic' ? 'bg-primary/20 text-primary border-primary' :
                                 node.type === 'error' ? 'bg-danger/20 text-danger border-danger' :
-                                    'bg-bgInput text-white border-borderC hover:border-textMuted'}`}
+                                    'bg-bgInput text-white border-borderC hover:border-textMuted'}
+               ${node.needsScaling ? 'ring-[3px] ring-danger/50 ring-offset-2 ring-offset-bgMain animate-pulse' : ''}`}
                         >
                             {node.type === 'kafka-topic' ? <LucideDatabase size={20} /> :
                                 node.type === 'error' ? <LucideAlertTriangle size={20} /> : 'M'}
@@ -239,7 +240,8 @@ export default function TopologyCanvas({ activePipeline, onNodeClick }) {
                         <span className="mt-2 text-xs font-bold text-center w-32 drop-shadow-md bg-black/50 px-2 py-1 rounded">
                             {node.label}
                         </span>
-                        {node.optional && <span className="absolute -top-2 -right-2 bg-warning text-black text-[9px] px-1 rounded font-bold">OPT</span>}
+                        {node.optional && <span className="absolute -top-2 -right-2 bg-warning text-black text-[9px] px-1 rounded font-bold z-20">OPT</span>}
+                        {node.needsScaling && <span className="absolute -top-2 -left-2 bg-danger text-white p-1 rounded-full z-20" title="High CPU/Mem - Click to Scale Resources"><LucideAlertTriangle size={12} /></span>}
                     </div>
                 ))}
 
